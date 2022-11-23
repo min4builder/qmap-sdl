@@ -9,42 +9,44 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <SDL/SDL.h>
 
 #include "s.h"
 #include "mode.h"
 
-char *framebuffer = (char *) 0xA0000;
+static SDL_Surface *screen;
 
 void blit(char *src)
 {
-   memcpy(framebuffer, src, 320*200);
+   SDL_LockSurface(screen);
+   memcpy(screen->pixels, src, 320*200);
+   SDL_UnlockSurface(screen);
+   SDL_Flip(screen);
 }
 
 void set_pal(uchar *pal)
 {
+   SDL_Color colors[256];
    int i;
-   outp(0x3c8, 0);
-   for (i=0; i < 768; ++i)
-      outp(0x3c9, pal[i] >> 2);
+   for (i=0; i < 256; ++i) {
+      colors[i].r=pal[i*3];
+      colors[i].g=pal[i*3+1];
+      colors[i].b=pal[i*3+2];
+   }
+   SDL_SetColors(screen, colors, 0, 256);
 }
-
-#pragma aux set_mode = \
-    "  int  10h" \
-    parm [eax];
-
-void set_mode(int mode);
 
 bool graphics=0;
 void set_lores(void)
 {
    graphics = 1;
-   set_mode(0x13);
+   SDL_SetVideoMode(320, 200, 8, SDL_SWSURFACE);
+   screen = SDL_GetVideoSurface();
 }
    
 void set_text(void)
 {
    if (graphics) {
-      set_mode(0x3);
       graphics = 0;
    }
 }

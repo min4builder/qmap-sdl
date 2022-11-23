@@ -5,14 +5,13 @@
  *   General setup control, main "sim" loop
  */
 
-#include <conio.h>
-#include <dos.h>
+#include <SDL/SDL.h>
+
 #include "bspfile.h"
 #include "mode.h"
 #include "3d.h"
 #include "fix.h"
 #include "scr.h"
-#include "char.h"
 #include "tm.h"
 #include "render.h"
 #include "bsp.h"
@@ -27,7 +26,7 @@ angvec cam_ang, cam_angvel;
 char *scr_buf;
 int   scr_row;
 
-#define ANG_STEP  0x0080
+#define ANG_STEP  0x0008
 #define VEL_STEP  0.5
 
 char colormap[64][256];
@@ -54,31 +53,35 @@ void run_sim(void)
 
       // UI
 
-      while (kbhit()) {
-         int c = getch();
-         switch(c) {
-            case 'Q': case 27:
-               return;
+      SDL_Event ev;
+      while (SDL_PollEvent(&ev)) {
+         if (ev.type == SDL_KEYDOWN) {
+            switch(ev.key.keysym.sym) {
+            case SDLK_DOWN: cam_angvel.tx += ANG_STEP; break;
+            case SDLK_3: cam_angvel.ty += ANG_STEP; break;
+            case SDLK_RIGHT: cam_angvel.tz += ANG_STEP; break;
 
-            case 'v': cam_angvel.tx += ANG_STEP; break;
-            case 'r': cam_angvel.tx -= ANG_STEP; break;
-            case 'q': cam_angvel.ty += ANG_STEP; break;
-            case 'e': cam_angvel.ty -= ANG_STEP; break;
-            case 'd': cam_angvel.tz += ANG_STEP; break;
-            case 'a': cam_angvel.tz -= ANG_STEP; break;
+            case SDLK_d: cam_vel.x += VEL_STEP; break;
+            case SDLK_j: cam_vel.z -= VEL_STEP; break;
+            case SDLK_w: cam_vel.y += VEL_STEP; break;
 
-            case 'c': cam_vel.x += VEL_STEP; break;
-            case 'z': cam_vel.x -= VEL_STEP; break;
-            case '1': cam_vel.z -= VEL_STEP; break;
-            case '3': cam_vel.z += VEL_STEP; break;
-            case 'x': cam_vel.y -= VEL_STEP; break;
-            case 'w': cam_vel.y += VEL_STEP; break;
-               
-            case ' ':
+            case SDLK_UP: cam_angvel.tx -= ANG_STEP; break;
+            case SDLK_1: cam_angvel.ty -= ANG_STEP; break;
+            case SDLK_LEFT: cam_angvel.tz -= ANG_STEP; break;
+
+            case SDLK_a: cam_vel.x -= VEL_STEP; break;
+            case SDLK_k: cam_vel.z += VEL_STEP; break;
+            case SDLK_x: cam_vel.y -= VEL_STEP; break;
+
+            case SDLK_SPACE:
                cam_vel.x = cam_vel.y = cam_vel.z = 0;
                cam_angvel.tx = cam_angvel.ty = cam_angvel.tz = 0;
                break;
-         }
+            default:
+               break;
+            }
+         } else if (ev.type == SDL_QUIT)
+            return;
       }
 
       // "PHYSICS"
@@ -104,7 +107,7 @@ void run_sim(void)
 
 void load_graphics(void)
 {
-   char pal[768];
+   unsigned char pal[768];
    FILE *f;
    if ((f = fopen("palette.lmp", "rb")) == NULL)
       fatal("Couldn't read palette.lmp\n");
@@ -122,6 +125,7 @@ int main(int argc, char **argv)
    if (argc != 2) {
       printf("Usage: qmap <bspfile>\n");
    } else {
+      SDL_Init(SDL_INIT_VIDEO);
       LoadBSPFile(argv[1]);
       set_lores();
       load_graphics();

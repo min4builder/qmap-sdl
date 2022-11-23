@@ -163,7 +163,7 @@ void build_block(char *out, bitmap *raw, int x, int y)
    fix c,dc;
    int a,b,h,c0,c1,c2,c3, step = global_step, row = global_row - step;
    int y_max = raw->ht, x_max = raw->wid;
-   char *s = raw->bits + y*raw->wid;
+   unsigned char *s = raw->bits + y*raw->wid;
 
    c0 = (255 - light_index[0]) << 16;
    c1 = (255 - light_index[1]) << 16;

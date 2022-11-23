@@ -15,7 +15,7 @@
 #define DIST  256.0    // dist to switch first mip level
 #define DIST2 (DIST*DIST)
 
-int compute_mip_level(face)
+int compute_mip_level(int face)
 {
    // dumb algorithm: grab 3d coordinate of some vertex,
    // compute dist from viewer
@@ -54,9 +54,9 @@ void get_face_extent(int face, int *u0, int *v0, int *u1, int *v1)
    umin = umax = uv[0][0];
    vmin = vmax = uv[0][1];
    for (i=1; i < n; ++i) {
-           if (uv[i][0] < umin) umin = uv[i][0];
+      if (uv[i][0] < umin) umin = uv[i][0];
       else if (uv[i][0] > umax) umax = uv[i][0];
-           if (uv[i][1] < vmin) vmin = uv[i][1];
+      if (uv[i][1] < vmin) vmin = uv[i][1];
       else if (uv[i][1] > vmax) vmax = uv[i][1];
    }
    *u0 = FLOAT_TO_INT(umin) & ~15;
