@@ -26,14 +26,16 @@ angvec cam_ang, cam_angvel;
 char *scr_buf;
 int   scr_row;
 
-#define ANG_STEP  0x0008
-#define VEL_STEP  0.5
+#define ANG_STEP  0x0010
+#define VEL_STEP  0.25
 
 char colormap[64][256];
 
 void run_sim(void)
 {
+   static char pressed[SDLK_LAST] = {0};
    vector temp;
+   int now, before, delta;
 
    scr_buf = malloc(320*200);
    scr_row = 320;
@@ -43,7 +45,11 @@ void run_sim(void)
    cam_loc.y = 240;
    cam_loc.z = 100;
 
+   now = SDL_GetTicks();
    for (;;) {
+      before = now;
+      now = SDL_GetTicks();
+      delta = now - before;
 
       // RENDER
 
@@ -55,34 +61,37 @@ void run_sim(void)
 
       SDL_Event ev;
       while (SDL_PollEvent(&ev)) {
-         if (ev.type == SDL_KEYDOWN) {
-            switch(ev.key.keysym.sym) {
-            case SDLK_DOWN: cam_angvel.tx += ANG_STEP; break;
-            case SDLK_3: cam_angvel.ty += ANG_STEP; break;
-            case SDLK_RIGHT: cam_angvel.tz += ANG_STEP; break;
-
-            case SDLK_d: cam_vel.x += VEL_STEP; break;
-            case SDLK_j: cam_vel.z -= VEL_STEP; break;
-            case SDLK_w: cam_vel.y += VEL_STEP; break;
-
-            case SDLK_UP: cam_angvel.tx -= ANG_STEP; break;
-            case SDLK_1: cam_angvel.ty -= ANG_STEP; break;
-            case SDLK_LEFT: cam_angvel.tz -= ANG_STEP; break;
-
-            case SDLK_a: cam_vel.x -= VEL_STEP; break;
-            case SDLK_k: cam_vel.z += VEL_STEP; break;
-            case SDLK_x: cam_vel.y -= VEL_STEP; break;
-
-            case SDLK_SPACE:
-               cam_vel.x = cam_vel.y = cam_vel.z = 0;
-               cam_angvel.tx = cam_angvel.ty = cam_angvel.tz = 0;
-               break;
-            default:
-               break;
-            }
-         } else if (ev.type == SDL_QUIT)
+         if (ev.type == SDL_KEYDOWN)
+            pressed[ev.key.keysym.sym] = 1;
+         else if (ev.type == SDL_KEYUP)
+            pressed[ev.key.keysym.sym] = 0;
+         else if (ev.type == SDL_QUIT)
             return;
       }
+
+      cam_vel.x = cam_vel.y = cam_vel.z = 0;
+      cam_angvel.tx = cam_angvel.ty = cam_angvel.tz = 0;
+
+      if (pressed[SDLK_DOWN])
+         cam_angvel.tx += ANG_STEP * delta;
+      if (pressed[SDLK_UP])
+         cam_angvel.tx -= ANG_STEP * delta;
+      if (pressed[SDLK_RIGHT])
+         cam_angvel.tz += ANG_STEP * delta;
+      if (pressed[SDLK_LEFT])
+         cam_angvel.tz -= ANG_STEP * delta;
+      if (pressed[SDLK_w])
+         cam_vel.y += VEL_STEP * delta;
+      if (pressed[SDLK_s])
+         cam_vel.y -= VEL_STEP * delta;
+      if (pressed[SDLK_d])
+         cam_vel.x += VEL_STEP * delta;
+      if (pressed[SDLK_a])
+         cam_vel.x -= VEL_STEP * delta;
+      if (pressed[SDLK_k])
+         cam_vel.z += VEL_STEP * delta;
+      if (pressed[SDLK_j])
+         cam_vel.z -= VEL_STEP * delta;
 
       // "PHYSICS"
 
@@ -102,6 +111,9 @@ void run_sim(void)
       temp.x = 0; temp.y = 0; temp.z = cam_vel.z;
       rotate_vec(&temp);
       cam_loc.x  += temp.x; cam_loc.y += temp.y; cam_loc.z += temp.z;
+   
+      if (delta)
+         printf("%dms, %d fps\n", delta, 1000 / delta);
    }
 }
 

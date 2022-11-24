@@ -51,23 +51,11 @@ Commandline usage:
 
 Controls:
 
-   QMAP uses a pretty wacky keyboard control scheme
-   which is my standard testbed layout.
+   Use the 'wasd' cluster to move, j/k to go down/up,
+   arrow keys to look around.
 
-   Press <spacebar> to halt all movement.
-   Press <esc> to quit.
-
-   Use the 'qwe/asd/zxc/rv' cluster to tilt and move,
-   a la System Shock, except that each keystroke _accelerates_
-   your movement.  This can be disturbing until you're used to
-   it; just remember to hit spacebar to halt.
-
-    w   x          move forward & backward
-    a   d          turn left & right
-    z   c          sidestep left & right
-    r   v          look up & down
-    q   e          bank view
-    1   3          "sidestep" up & down
-   spacebar        stop moving
-
-  esc shift-Q      quit
+    w    s          move forward & backward
+    a    d          sidestep left & right
+    up   down       look up & down
+    left right      bank view
+    k    j          "sidestep" up & down
