@@ -4,13 +4,12 @@
 extern void init_cache(void);
 extern void get_tmap(bitmap *, int face, int tex, int mip, float *u, float *v);
 
-typedef struct
-{
-   int face;
-   int mip_level;
-   int valid;
-   bitmap *bm;
-   float u,v;
+typedef struct {
+	int face;
+	int mip_level;
+	int valid;
+	bitmap *bm;
+	float u, v;
 } surface_t;
 
 #define MAX_CACHE            (1024*1024)

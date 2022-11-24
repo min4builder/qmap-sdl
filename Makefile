@@ -13,6 +13,9 @@ qmap: $(OBJS)
 tags: $(SRCS)
 	ctags $(SRCS)
 
+indent:
+	indent -orig -di0 -nbc -ut -i8 -nlp -ci8 -l80 -hnl $(SRCS)
+
 clean:
 	$(RM) qmap *.o
 
