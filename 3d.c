@@ -1,5 +1,5 @@
 /*
- * QMAP: Quake level viewer 3d.c Copyright 1997 Sean Barrett general 3d math 
+ * general 3d math 
  */
 
 #include <math.h>
@@ -7,8 +7,10 @@
 #include "3d.h"
 #include "bspfile.h"
 
+#include "mode.h"
+
 double
-dot_vec_dbl(double *a, vector * b)
+dot_vec_dbl(double *a, vector *b)
 {
 	return a[0] * b->x + a[1] * b->y + a[2] * b->z;
 }
@@ -53,7 +55,7 @@ rot_z(double *v, fixang ang)
 }
 
 void
-rotate(double *x, angvec * ang)
+rotate(double *x, angvec *ang)
 {
 	rot_y(x, ang->ty);	// bank
 	rot_x(x, ang->tx);	// pitch
@@ -65,25 +67,25 @@ static vector cam_loc;
 
 static fix clip_x_low, clip_x_high, clip_y_low, clip_y_high;
 
-static float proj_scale_x = 160, proj_scale_y = 160 * 200 / 240;
-static float xcenter = 159.5, ycenter = 99.5;
+static float proj_scale_x = WIDTH / 2, proj_scale_y = HEIGHT / 2 * 16.0 / 9;
+static float xcenter = WIDTH / 2 - 0.5, ycenter = HEIGHT / 2 - 0.5;
 static float near_clip = 0.01, near_code = 16.0;
 
 double clip_scale_x, clip_scale_y;
 
 void
-set_view_info(vector * loc, angvec * ang)
+set_view_info(vector *loc, angvec *ang)
 {
 	int i;
 	cam_loc = *loc;
 
 	clip_x_low = -0x8000;
-	clip_x_high = fix_make(320, 0) - 0x8000;
+	clip_x_high = fix_make(WIDTH, 0) - 0x8000;
 	clip_y_low = -0x8000;
-	clip_y_high = fix_make(200, 0) - 0x8000;
+	clip_y_high = fix_make(HEIGHT, 0) - 0x8000;
 
-	clip_scale_x = 1 / 160.0;
-	clip_scale_y = 1 / 100.0;
+	clip_scale_x = 2.0 / WIDTH;
+	clip_scale_y = 2.0 / HEIGHT;
 
 	// compute rotation matrix
 	memset(view_matrix, 0, sizeof(view_matrix));
@@ -110,7 +112,7 @@ set_view_info(vector * loc, angvec * ang)
 }
 
 double
-dist2_from_viewer(vector * in)
+dist2_from_viewer(vector *in)
 {
 	vector temp;
 	temp.x = in->x - cam_loc.x;
@@ -121,7 +123,7 @@ dist2_from_viewer(vector * in)
 }
 
 void
-rotate_c2w(vector * dest, vector * src)
+rotate_c2w(vector *dest, vector *src)
 {
 	dest->x = src->x * main_matrix[0][0]
 		+ src->y * main_matrix[1][0]
@@ -135,7 +137,7 @@ rotate_c2w(vector * dest, vector * src)
 }
 
 void
-rotate_vec(vector * item)
+rotate_vec(vector *item)
 {
 	vector temp;
 	temp = *item;
@@ -143,7 +145,7 @@ rotate_vec(vector * item)
 }
 
 void
-compute_plane(dplane_t * plane, float x, float y, float z)
+compute_plane(dplane_t *plane, float x, float y, float z)
 {
 	vector temp, temp2;
 	temp2.x = x;
@@ -158,7 +160,7 @@ compute_plane(dplane_t * plane, float x, float y, float z)
 }
 
 void
-compute_view_frustrum(dplane_t * planes)
+compute_view_frustrum(dplane_t *planes)
 {
 	compute_plane(planes + 0, -1, 0, 1);
 	compute_plane(planes + 1, 1, 0, 1);
@@ -167,7 +169,7 @@ compute_view_frustrum(dplane_t * planes)
 }
 
 void
-transform_point_raw(vector * out, vector * in)
+transform_point_raw(vector *out, vector *in)
 {
 	vector temp;
 	temp.x = in->x - translate[0];
@@ -180,7 +182,7 @@ transform_point_raw(vector * out, vector * in)
 }
 
 void
-transform_vector(vector * out, vector * in)
+transform_vector(vector *out, vector *in)
 {
 	vector temp = *in;
 	out->x = dot_vec_dbl(view_matrix[0], &temp);
@@ -189,7 +191,7 @@ transform_vector(vector * out, vector * in)
 }
 
 void
-project_point(point_3d * p)
+project_point(point_3d *p)
 {
 	if (p->p.z >= near_clip) {
 		double div = 1.0 / p->p.z;
@@ -199,7 +201,7 @@ project_point(point_3d * p)
 }
 
 void
-code_point(point_3d * p)
+code_point(point_3d *p)
 {
 	if (p->p.z >= near_code) {
 		// if point is far enough away, code in 2d from fixedpoint
@@ -228,7 +230,7 @@ code_point(point_3d * p)
 }
 
 void
-transform_point(point_3d * p, vector * v)
+transform_point(point_3d *p, vector *v)
 {
 	transform_point_raw(&p->p, v);
 	project_point(p);
@@ -236,7 +238,7 @@ transform_point(point_3d * p, vector * v)
 }
 
 void
-transform_rotated_point(point_3d * p)
+transform_rotated_point(point_3d *p)
 {
 	project_point(p);
 	code_point(p);

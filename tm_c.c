@@ -1,18 +1,21 @@
 /*
- * QMAP: Quake level viewer tm_c.c Copyright 1997 Sean Barrett Texture mapper 
- * in C takes any size texture map, renders it point-sampled with no lighting 
+ * Texture mapper
+ * takes any size texture map, renders it point-sampled with no lighting 
  */
 
 #include "s.h"
 #include "fix.h"
 #include "tm.h"
 
+#include "mode.h"
+
 char *qmap_buf, *qmap_tex;
 int qmap_buf_row, qmap_tex_row;
 int qmap_wid, qmap_ht;
 
-int qmap_row_table[768];	// max height of screen
-int qmap_tex_row_table[258];	// max height of texture + 2
+int qmap_row_table[HEIGHT];
+// max height of texture + 2
+int qmap_tex_row_table[258];
 
 static double qmap_tmap[9];
 
@@ -138,7 +141,7 @@ qmap_draw_span(int y, int sx, int ex)
 	}
 }
 
-// / setup global variables code
+// setup global variables code
 
 void
 qmap_set_output(char *where, int row)
@@ -147,13 +150,13 @@ qmap_set_output(char *where, int row)
 	if (qmap_buf_row != row) {
 		int i;
 		qmap_buf_row = row;
-		for (i = 0; i < 768; ++i)
+		for (i = 0; i < HEIGHT; ++i)
 			qmap_row_table[i] = i * row;
 	}
 }
 
 void
-qmap_set_texture(bitmap * bm)
+qmap_set_texture(bitmap *bm)
 {
 	int row = bm->wid, ht = bm->ht;
 	qmap_tex = bm->bits;

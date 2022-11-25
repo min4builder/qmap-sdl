@@ -1,6 +1,5 @@
 /*
- * QMAP: Quake level viewer clippoly.c Copyright 1997 Sean Barrett clip
- * polygon to view frustrum, in viewspace 
+ * clip polygon to view frustrum, in viewspace 
  */
 
 #include "3d.h"
@@ -12,7 +11,7 @@ static point_3d pts[16], *clip_list1[40], *clip_list2[40];
 #define Z p.z
 
 static void
-intersect(point_3d * out, point_3d * a, point_3d * b, float where)
+intersect(point_3d *out, point_3d *a, point_3d *b, float where)
 {
 	// intersection occurs 'where' % along the line from a to b
 
@@ -26,36 +25,36 @@ intersect(point_3d * out, point_3d * a, point_3d * b, float where)
 // compute 'where' for various clip planes
 
 static double
-left_loc(point_3d * a, point_3d * b)
+left_loc(point_3d *a, point_3d *b)
 {
-	return -(a->Z + a->X * clip_scale_x) / ((b->X - a->X) * clip_scale_x +
-		b->Z - a->Z);
+	return -(a->Z + a->X * clip_scale_x)
+		/ ((b->X - a->X) * clip_scale_x + b->Z - a->Z);
 }
 
 static double
-right_loc(point_3d * a, point_3d * b)
+right_loc(point_3d *a, point_3d *b)
 {
-	return (a->Z - a->X * clip_scale_x) / ((b->X - a->X) * clip_scale_x -
-		b->Z + a->Z);
+	return (a->Z - a->X * clip_scale_x)
+		/ ((b->X - a->X) * clip_scale_x - b->Z + a->Z);
 }
 
 static double
-top_loc(point_3d * a, point_3d * b)
+top_loc(point_3d *a, point_3d *b)
 {
-	return (a->Z - a->Y * clip_scale_y) / ((b->Y - a->Y) * clip_scale_y -
-		b->Z + a->Z);
+	return (a->Z - a->Y * clip_scale_y)
+		/ ((b->Y - a->Y) * clip_scale_y - b->Z + a->Z);
 }
 
 static double
-bottom_loc(point_3d * a, point_3d * b)
+bottom_loc(point_3d *a, point_3d *b)
 {
-	return -(a->Z + a->Y * clip_scale_y) / ((b->Y - a->Y) * clip_scale_y +
-		b->Z - a->Z);
+	return -(a->Z + a->Y * clip_scale_y)
+		/ ((b->Y - a->Y) * clip_scale_y + b->Z - a->Z);
 }
 
 // clip the polygon to each of the view frustrum planes
 int
-clip_poly(int n, point_3d ** vl, int codes_or, point_3d *** out_vl)
+clip_poly(int n, point_3d **vl, int codes_or, point_3d ***out_vl)
 {
 	int i, j, k, p = 0;	// p = index into temporary point pool
 	point_3d **cur;
@@ -74,8 +73,8 @@ clip_poly(int n, point_3d ** vl, int codes_or, point_3d *** out_vl)
 			// if it crosses, add the intersection point
 
 			if ((vl[j]->ccodes ^ vl[i]->ccodes) & CC_OFF_LEFT) {
-				intersect(&pts[p], vl[i], vl[j], left_loc(vl[i],
-						vl[j]));
+				intersect(&pts[p], vl[i], vl[j],
+					left_loc(vl[i], vl[j]));
 				cur[k++] = &pts[p++];
 			}
 			j = i;
@@ -109,8 +108,8 @@ clip_poly(int n, point_3d ** vl, int codes_or, point_3d *** out_vl)
 			if (!(vl[j]->ccodes & CC_OFF_TOP))
 				cur[k++] = vl[j];
 			if ((vl[j]->ccodes ^ vl[i]->ccodes) & CC_OFF_TOP) {
-				intersect(&pts[p], vl[i], vl[j], top_loc(vl[i],
-						vl[j]));
+				intersect(&pts[p], vl[i], vl[j],
+					top_loc(vl[i], vl[j]));
 				cur[k++] = &pts[p++];
 			}
 			j = i;

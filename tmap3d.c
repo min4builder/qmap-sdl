@@ -1,7 +1,6 @@
 /*
- * QMAP: Quake level viewer tmap3d.c Copyright 1997 Sean Barrett compute
- * texture-mapping info that has to look at stuff in 3d: mipmapping, texture
- * gradient 
+ * compute texture-mapping info that has to look at stuff in 3d:
+ * mipmapping, texture gradient 
  */
 
 #include <math.h>
@@ -9,6 +8,8 @@
 #include "bspfile.h"
 #include "tmap3d.h"
 #include "tm.h"
+
+#include "mode.h"
 
 #define DIST  256.0		// dist to switch first mip level
 #define DIST2 (DIST*DIST)
@@ -23,8 +24,7 @@ compute_mip_level(int face)
 	double dist;
 	if (e < 0)
 		e = -e;
-	dist = dist2_from_viewer((vector *) & dvertexes[dedges[e].v[0]]) /
-		DIST2;
+	dist = dist2_from_viewer((vector *) &dvertexes[dedges[e].v[0]]) / DIST2;
 	if (dist < 1)
 		return 0;
 	if (dist < 4)
@@ -75,7 +75,7 @@ get_face_extent(int face, int *u0, int *v0, int *u1, int *v1)
 }
 
 void
-compute_texture_normal(vector * out, vector * u, vector * v)
+compute_texture_normal(vector *out, vector *u, vector *v)
 {
 	out->x = u->y * v->z - u->z * v->y;
 	out->y = u->z * v->x - u->x * v->z;
@@ -83,11 +83,14 @@ compute_texture_normal(vector * out, vector * u, vector * v)
 }
 
 void
-setup_uv_vector(vector * out, vector * in, vector * norm, float *plane)
+setup_uv_vector(vector *out, vector *in, vector *norm, float *plane)
 {
-	double dot = -(in->x * plane[0] + in->y * plane[1] + in->z * plane[2])
-		/ (norm->x * plane[0] + norm->y * plane[1] +
-		norm->z * plane[2]);
+	double dot = -(in->x * plane[0]
+			+ in->y * plane[1]
+			+ in->z * plane[2])
+		/ (norm->x * plane[0]
+			+ norm->y * plane[1]
+			+ norm->z * plane[2]);
 	if (dot != 0) {
 		vector temp = *in;
 		temp.x += norm->x * dot;
@@ -100,11 +103,13 @@ setup_uv_vector(vector * out, vector * in, vector * norm, float *plane)
 
 // compute location of origin of texture (should precompute)
 void
-setup_origin_vector(vector * out, dplane_t * plane, vector * norm)
+setup_origin_vector(vector *out, dplane_t *plane, vector *norm)
 {
 	vector temp;
-	float d = plane->dist / (norm->x * plane->normal[0]
-		+ norm->y * plane->normal[1] + norm->z * plane->normal[2]);
+	float d = plane->dist
+		/ (norm->x * plane->normal[0]
+			+ norm->y * plane->normal[1]
+			+ norm->z * plane->normal[2]);
 	temp.x = d * norm->x;
 	temp.y = d * norm->y;
 	temp.z = d * norm->z;
@@ -125,10 +130,8 @@ compute_texture_gradients(int face, int tex, int mip, float u, float v)
 		(vector *) texinfo[tex].vecs[0],
 		(vector *) texinfo[tex].vecs[1]);
 	// project vectors onto face's plane, and transform
-	setup_uv_vector(&M, (vector *) texinfo[tex].vecs[0], &norm,
-		plane->normal);
-	setup_uv_vector(&N, (vector *) texinfo[tex].vecs[1], &norm,
-		plane->normal);
+	setup_uv_vector(&M, (vector *) texinfo[tex].vecs[0], &norm, plane->normal);
+	setup_uv_vector(&N, (vector *) texinfo[tex].vecs[1], &norm, plane->normal);
 	setup_origin_vector(&P, plane, &norm);
 
 	u -= texinfo[tex].vecs[0][3];	// adjust according to face's info
@@ -152,9 +155,9 @@ compute_texture_gradients(int face, int tex, int mip, float u, float v)
 
 	// offset by center of screen--if this were folded into
 	// transform translation we could avoid it
-	tmap_data[0] -= tmap_data[1] * 159.5 + tmap_data[2] * 99.5;
-	tmap_data[3] -= tmap_data[4] * 159.5 + tmap_data[5] * 99.5;
-	tmap_data[6] -= tmap_data[7] * 159.5 + tmap_data[8] * 99.5;
+	tmap_data[0] -= tmap_data[1] * (WIDTH / 2 - 0.5) + tmap_data[2] * (HEIGHT / 2 - 0.5);
+	tmap_data[3] -= tmap_data[4] * (WIDTH / 2 - 0.5) + tmap_data[5] * (HEIGHT / 2 - 0.5);
+	tmap_data[6] -= tmap_data[7] * (WIDTH / 2 - 0.5) + tmap_data[8] * (HEIGHT / 2 - 0.5);
 
 	tmap_data[0] *= rescale;
 	tmap_data[1] *= rescale;

@@ -1,6 +1,5 @@
 /*
- * QMAP: Quake level viewer main.c Copyright 1997 Sean Barett General setup
- * control, main "sim" loop 
+ * General setup control, main "sim" loop 
  */
 
 #include <SDL/SDL.h>
@@ -36,8 +35,8 @@ run_sim(void)
 	vector temp;
 	int now, before, delta;
 
-	scr_buf = malloc(320 * 200);
-	scr_row = 320;
+	scr_buf = malloc(WIDTH * HEIGHT);
+	scr_row = WIDTH;
 	qmap_set_output(scr_buf, scr_row);
 
 	cam_loc.x = 500;

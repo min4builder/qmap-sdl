@@ -1,5 +1,7 @@
          QMAP Copyright 1997 Sean Barrett
-  See "redist.txt" for redistribution information
+            Updated 2022 by Lucas Ieks
+    See "REDIST" for redistribution information
+            (TLDR; it's public domain)
 
                     --==--==--
 
@@ -13,14 +15,14 @@ Quickstart:
                     --==--==--
 
 Files:
-   redist.txt       redistribution information
-   readme.txt       (this file) instructions for executable
-   source.txt       instructions for source code
-   qmap.txt         general description, goals, feature list
-   manifest.txt     list of all files
-   bug.txt          information about bugs and bug reporting
+   REDIST       redistribution information
+   README       (this file) instructions for executable
+   SOURCE       instructions for source code
+   QMAP         general description, goals, feature list
+   MANIFEST     list of all files
+   BUG          information about bugs and bug reporting
 
-   other text documents are described in source.txt
+   other text documents are described in SOURCE
 
                     --==--==--
 

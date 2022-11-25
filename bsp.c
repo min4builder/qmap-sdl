@@ -1,6 +1,5 @@
 /*
- * QMAP: Quake level viewer bsp.c Copyright 1997 Sean Barrett routines that
- * recurse through bsp tree 
+ * routines that recurse through bsp tree 
  */
 
 #include "bspfile.h"
@@ -9,20 +8,21 @@
 #include "render.h"
 
 int
-point_plane_test(vector * loc, dplane_t * plane)
+point_plane_test(vector *loc, dplane_t *plane)
 {
-	return plane->normal[0] * loc->x + plane->normal[1] * loc->y
-		+ plane->normal[2] * loc->z < plane->dist;
+	return plane->dist >
+		(plane->normal[0] * loc->x
+		+ plane->normal[1] * loc->y
+		+ plane->normal[2] * loc->z);
 }
 
 int
-find_leaf(vector * loc)
+find_leaf(vector *loc)
 {
 	int n = dmodels[0].headnode[0];
 	while (n >= 0) {
 		dnode_t *node = &dnodes[n];
-		n = node->children[point_plane_test(loc,
-				&dplanes[node->planenum])];
+		n = node->children[point_plane_test(loc, &dplanes[node->planenum])];
 	}
 	return ~n;
 }
@@ -50,7 +50,7 @@ bsp_render_node(int node)
 }
 
 void
-bsp_render_world(vector * cam_loc, dplane_t * pl)
+bsp_render_world(vector *cam_loc, dplane_t *pl)
 {
 	planes = pl;
 	loc = cam_loc;
@@ -69,7 +69,7 @@ bsp_find_visible_nodes(int node)
 		return vis_node[node];
 	} else {
 		node = ~node;
-		return (vis_leaf[node >> 3] & (1 << (node & 7)));
+		return vis_leaf[node >> 3] & (1 << (node & 7));
 	}
 }
 
@@ -95,7 +95,7 @@ bsp_explore_node(int node)
 }
 
 void
-bsp_visit_visible_leaves(vector * cam_loc, dplane_t * pl)
+bsp_visit_visible_leaves(vector *cam_loc, dplane_t *pl)
 {
 	planes = pl;
 	loc = cam_loc;

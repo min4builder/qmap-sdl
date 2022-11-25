@@ -1,4 +1,4 @@
-CFLAGS = -Wall -Wextra -std=c99 -pedantic -g -Og
+CFLAGS = -Wall -Wextra -std=c99 -pedantic -g -O2 -fno-strict-aliasing
 LDFLAGS =
 LIBS = -lSDL
 

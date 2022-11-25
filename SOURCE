@@ -1,11 +1,12 @@
 QMAP: Quake level viewer
 Copyright 1997 Sean Barrett
+Updated 2022 by Lucas Ieks
 
 QMAP SOURCE CODE
 
 This distribution includes complete source code for QMAP
-which will compile under Watcom 9.5.  It's almost all
-standard ("ANSI") C, except for the use of // for comments.
+which will compile under GCC.  It's almost all standard
+C89, except for the use of // for comments.
 
 Subsections of this file:
   VARIOUS NOTES ABOUT THE SOURCE
@@ -30,26 +31,8 @@ Subsections of this file:
      shows up in the polygon code and polygon clipper for
      # of points allowed; that's a bug.
 
-     There's also 320, 200, 159.5 and 99.5's all through the
-     code.  This hopefully will call reader's attention to
-     whether a particular place uses the "offset by 0.5" or not,
-     rather than hiding such details behind a macro or variable
-     whose name would just mean "the right value to add at this stage".
-     (One of the problems with using matrices.)
-
-     Nonetheless, all of that stuff should be put into variables
-     so the screen can be resized.
-
-  -  Some places in the code have more than one statement
-     per line.  This is not so I can have only 2000 lines,
-     but is probably one of my idioms.  I prefer to squeeze
-     things vertically so I can see entire functions at once.
-
-     Here's an example idiom:
-        var = <computation>; if (var <test-for-fixup>) var = <fixup>;
-
-     Here's an instance of this idiom:
-        x = y % width; if (x < 0) x += width;   // fixup for signed mod
+     In mode.h there are constants WIDTH and HEIGHT that define
+     the rendering resolution. Resizing is not supported.
 
   TEXT FILES
 
@@ -76,16 +59,13 @@ Subsections of this file:
     mode.c
 
       blit()
-         Blits a 320x200 screen
+         Blits a screen
 
       set_pal() 
          Sets a palette stored as 0..255 (not VGA 0..63)
 
       set_lores()
-         Enable 320x200 mode
-
-      set_text()
-         Enable 80x25 text mode
+         Create window
 
       fatal_error()
          Display error message (implements fatal() macro)

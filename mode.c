@@ -1,6 +1,5 @@
 /*
- * QMAP: Quake level viewer mode.c Copyright 1997 Sean Barett General screen
- * functions (set graphics mode, blit to framebuffer, set palette) 
+ * General screen functions (set graphics mode, blit to framebuffer, set palette) 
  */
 
 #include <stdlib.h>
@@ -17,13 +16,13 @@ void
 blit(char *src)
 {
 	SDL_LockSurface(screen);
-	memcpy(screen->pixels, src, 320 * 200);
+	memcpy(screen->pixels, src, WIDTH * HEIGHT);
 	SDL_UnlockSurface(screen);
 	SDL_Flip(screen);
 }
 
 void
-set_pal(uchar * pal)
+set_pal(uchar *pal)
 {
 	SDL_Color colors[256];
 	int i;
@@ -36,11 +35,12 @@ set_pal(uchar * pal)
 }
 
 bool graphics = 0;
+
 void
 set_lores(void)
 {
 	graphics = 1;
-	SDL_SetVideoMode(320, 200, 8, SDL_SWSURFACE);
+	SDL_SetVideoMode(WIDTH, HEIGHT, 8, SDL_SWSURFACE);
 	screen = SDL_GetVideoSurface();
 }
 

@@ -1,6 +1,5 @@
 /*
- * QMAP: Quake level viewer surface.c Copyright 1997 Sean Barrett Build
- * surfaces and cache them The cache is moronic, using malloc 
+ * Build surfaces and cache them The cache is moronic, using malloc 
  */
 
 #include <stdlib.h>
@@ -26,7 +25,7 @@ init_cache(void)
 }
 
 void
-get_raw_tmap(bitmap * bm, int tex, int ml)
+get_raw_tmap(bitmap *bm, int tex, int ml)
 {
 	dmiptexlump_t *mtl = (dmiptexlump_t *) dtexdata;
 	miptex_t *mip;
@@ -36,7 +35,7 @@ get_raw_tmap(bitmap * bm, int tex, int ml)
 	bm->ht = mip->height >> ml;
 }
 
-#define ADJ_SURFACE(x)    ((x) & (MAX_CACHED_SURFACES-1))
+#define ADJ_SURFACE(x) ((x) & (MAX_CACHED_SURFACES-1))
 
 void
 free_surface(int surf)
@@ -44,8 +43,7 @@ free_surface(int surf)
 	if (surface[surf].valid)
 		surface_cache[surface[surf].face] = -1;
 
-	cur_cache -=
-		surface[surf].bm->wid * surface[surf].bm->ht + sizeof(bitmap);
+	cur_cache -= surface[surf].bm->wid * surface[surf].bm->ht + sizeof(bitmap);
 	free(surface[surf].bm);
 }
 
@@ -84,13 +82,13 @@ allocate_cached_surface(int size)
 
 extern int is_cached;
 
-void build_block(char *out, bitmap * raw, int x, int y);
+void build_block(char *out, bitmap *raw, int x, int y);
 static int shift, global_step, global_row, lightmap_width;
 static uchar *light_index;
 static uchar blank_light[512];
 
 void
-get_tmap(bitmap * bm, int face, int tex, int ml, float *u, float *v)
+get_tmap(bitmap *bm, int face, int tex, int ml, float *u, float *v)
 {
 	int i, j, surf, u0, v0, u1, v1, step, x, y, x0;
 	bitmap raw;
@@ -171,7 +169,7 @@ get_tmap(bitmap * bm, int face, int tex, int ml, float *u, float *v)
 
 // compute one lightmap square of surface
 void
-build_block(char *out, bitmap * raw, int x, int y)
+build_block(char *out, bitmap *raw, int x, int y)
 {
 	extern char colormap[][256];
 	fix c, dc;

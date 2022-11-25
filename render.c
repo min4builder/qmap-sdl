@@ -1,8 +1,6 @@
 /*
- * QMAP: Quake level viewer render.c Copyright 1997 Sean Barrett "render"
- * scenes by traversing over the database, marking already-visited things,
- * using the PVS information and the "marksurface" info; use one bsp routine to 
- * sort 
+ * "render" scenes by traversing over the database, marking already-visited things,
+ * using the PVS information and the "marksurface" info; use one bsp routine to sort 
  */
 
 #include "bspfile.h"
@@ -11,6 +9,8 @@
 #include "bsp.h"
 #include "scr.h"
 #include "poly.h"
+
+#include "mode.h"
 
 char vis_face[MAX_MAP_FACES / 8 + 1];
 char vis_leaf[MAX_MAP_LEAFS / 8 + 1];
@@ -21,13 +21,13 @@ char vis_leaf[MAX_MAP_LEAFS / 8 + 1];
 
 #if 1
   // this works if IEEE, sizeof(float) == sizeof(int)
-#define FLOAT_POSITIVE(x)   (* (int *) (x) >= 0)
+#define FLOAT_POSITIVE(x)   (*(int *)(x) >= 0)
 #else
 #define FLOAT_POSITIVE(x)   ((x) >= 0)
 #endif
 
 int
-bbox_inside_plane(short *mins, short *maxs, dplane_t * plane)
+bbox_inside_plane(short *mins, short *maxs, dplane_t *plane)
 {
 	int i;
 	short pt[3];
@@ -46,7 +46,7 @@ bbox_inside_plane(short *mins, short *maxs, dplane_t * plane)
 }
 
 int
-node_in_frustrum(dnode_t * node, dplane_t * planes)
+node_in_frustrum(dnode_t *node, dplane_t *planes)
 {
 	if (!bbox_inside_plane(node->mins, node->maxs, planes + 0)
 		|| !bbox_inside_plane(node->mins, node->maxs, planes + 1)
@@ -57,7 +57,7 @@ node_in_frustrum(dnode_t * node, dplane_t * planes)
 }
 
 int
-leaf_in_frustrum(dleaf_t * node, dplane_t * planes)
+leaf_in_frustrum(dleaf_t *node, dplane_t *planes)
 {
 	if (!bbox_inside_plane(node->mins, node->maxs, planes + 0)
 		|| !bbox_inside_plane(node->mins, node->maxs, planes + 1)
@@ -83,7 +83,7 @@ mark_leaf_faces(int leaf)
 }
 
 int
-visit_visible_leaves(vector * cam_loc)
+visit_visible_leaves(vector *cam_loc)
 {
 	int n, v, i;
 
@@ -130,13 +130,13 @@ render_node_faces(int node, int side)
 }
 
 void
-render_world(vector * loc)
+render_world(vector *loc)
 {
 	dplane_t planes[4];
 	compute_view_frustrum(planes);
 
 	if (!visit_visible_leaves(loc)) {
-		memset(scr_buf, 0, 320 * 200);
+		memset(scr_buf, 0, WIDTH * HEIGHT);
 		memset(vis_leaf, 255, sizeof(vis_leaf));
 	}
 

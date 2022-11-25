@@ -1,7 +1,11 @@
 /*
- * QMAP: Quake level viewer poly.c Copyright 1997 Sean Barett Render a Quake
- * polygon: read it from the db transform it into 3d clip it in 3d compute the
- * 2d texture gradients scan convert pass off the spans 
+ * Render a Quake polygon:
+ * read it from the db
+ * transform it into 3d
+ * clip it in 3d
+ * compute the 2d texture gradients
+ * scan convert
+ * pass off the spans 
  */
 
 #include "bspfile.h"
@@ -10,6 +14,8 @@
 #include "tm.h"
 #include "tmap3d.h"
 #include "surface.h"
+
+#include "mode.h"
 
 point_3d pts[32], *default_vlist[32];
 
@@ -21,10 +27,10 @@ setup_default_point_list(void)
 		default_vlist[i] = &pts[i];
 }
 
-fix scan[768][2];
+fix scan[HEIGHT][2];
 
 void
-scan_convert(point_3d * a, point_3d * b)
+scan_convert(point_3d *a, point_3d *b)
 {
 	void *temp;
 	int right;
@@ -60,7 +66,7 @@ scan_convert(point_3d * a, point_3d * b)
 }
 
 void
-draw_poly(int n, point_3d ** vl)
+draw_poly(int n, point_3d **vl)
 {
 	int i, j, y, ey;
 	fix ymin, ymax;
@@ -115,7 +121,7 @@ draw_face(int face)
 	}
 
 	if (codes_and)
-		return;		// abort if poly outside frustrum
+		return; // abort if poly outside frustrum
 
 	if (codes_or) {
 		// poly crosses frustrum, so clip it
